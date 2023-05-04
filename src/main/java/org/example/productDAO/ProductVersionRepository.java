@@ -30,7 +30,9 @@ public class ProductVersionRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        if (productVersion.getId() == null) throw new RuntimeException("Current object didnt saved before");
+        if (productVersion.getId() == null) {
+            throw new RuntimeException("Current object didnt saved before");
+        }
         session.merge(productVersion);
 
         transaction.commit();

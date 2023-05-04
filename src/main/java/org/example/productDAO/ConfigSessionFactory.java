@@ -15,7 +15,9 @@ public class ConfigSessionFactory {
     }
 
     public static SessionFactory getSessionFactory() {
-        if (sessionFactory != null) return sessionFactory;
+        if (sessionFactory != null) {
+            return sessionFactory;
+        }
 
         Configuration configuration = new Configuration().configure();
         configuration.addAnnotatedClass(Product.class);
