@@ -2,19 +2,11 @@ package org.example;
 
 import org.example.entity.Product;
 import org.example.entity.ProductVersion;
+import org.example.productDAO.ConfigEntityManager;
 import org.example.productDAO.ProductRepository;
 import org.example.productDAO.ProductVersionRepository;
-import java.util.List;
 
-/**
- * Створити entity Product (UUID id, String name, int price)
- * і ProductVersion (UUID id, String details, String creator, int version),
- * між ними повинен бути зв’язок one-to-many.
- * Також треба реалізувати CRUD операції для кожної з цих ентіті у класах
- * (ProductRepository, ProductVersionRepository).
- * І також у класі ProductService зробити main метод за запитами для перевірки.
- * Технології: Java 11+, Maven, Hibernate, Postgres, Lombok(опціонально),
- */
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -23,8 +15,8 @@ public class App {
         ProductVersionRepository versionRepository = new ProductVersionRepository();
 
         Product product1 = new Product();
-        product1.setName("beer");
-        product1.setPrice(111);
+        product1.setName("product with entityManager");
+        product1.setPrice(999);
 
         productRepository.save(product1);
         product1.setName("new name");
@@ -42,16 +34,18 @@ public class App {
         version2.setProduct(product1);
         product1.setProductVersion(List.of(version1, version2));
 
-        productRepository.update(product1);
+        productRepository.save(product1);
         System.out.println(product1);
 
         Product productFromDB = productRepository.findById(product1.getId());
         System.out.println(productFromDB);
-        List<ProductVersion> productVersions= versionRepository.findAll();
+        List<ProductVersion> productVersions = versionRepository.findAll();
         System.out.println(productVersions);
 
         productRepository.delete(productFromDB);
         System.out.println(productRepository.findAll());
         System.out.println(versionRepository.findAll());
+
+        ConfigEntityManager.close();
     }
 }

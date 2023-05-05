@@ -1,76 +1,46 @@
 package org.example.productDAO;
 
 import org.example.entity.Product;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 
 public class ProductRepository {
 
-    private final SessionFactory sessionFactory;
+    private final EntityManager entityManager;
 
     public ProductRepository() {
-        sessionFactory = ConfigSessionFactory.getSessionFactory();
+        entityManager = ConfigEntityManager.getEntityManager();
     }
 
-    public void save(Product product){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.persist(product);
-
-        transaction.commit();
-        session.close();
+    public void save(Product product) {
+        entityManager.getTransaction().begin();
+        entityManager.persist(product);
+        entityManager.getTransaction().commit();
     }
 
-    public void update(Product product){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
+    public List<Product> findAll() {
+        entityManager.getTransaction().begin();
 
-        if (product == null) {
-            throw new RuntimeException("Current object didnt saved before");
-        }
-        session.merge(product);
+        var query = entityManager.createQuery("from Product", Product.class);
+        List<Product> list = query.getResultList();
 
-        transaction.commit();
-        session.close();
-    }
-
-    public List<Product> findAll(){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        Query<Product> query = session.createQuery("from Product", Product.class);
-        List<Product> list = query.list();
-
-        transaction.commit();
-        session.close();
+        entityManager.getTransaction().commit();
 
         return list;
     }
 
-    public Product findById(UUID id){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        Product product = session.find(Product.class, id);
-
-        transaction.commit();
-        session.close();
+    public Product findById(UUID id) {
+        entityManager.getTransaction().begin();
+        Product product = entityManager.find(Product.class, id);
+        entityManager.getTransaction().commit();
 
         return product;
     }
 
-    public void delete(Product product){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.remove(product);
-
-        transaction.commit();
-        session.close();
+    public void delete(Product product) {
+        entityManager.getTransaction().begin();
+        entityManager.remove(product);
+        entityManager.getTransaction().commit();
     }
 }

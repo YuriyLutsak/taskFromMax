@@ -28,13 +28,13 @@ public class ProductVersion {
    @GeneratedValue(generator = "UUID")
    private UUID id;
 
-   @Column
+   @Column(name = "details")
    private String details;
 
-   @Column
+   @Column(name = "creator")
    private String creator;
 
-   @Column
+   @Column(name = "version")
    private int version;
 
    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -21,7 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Setter
 @Getter
-@ToString(exclude = "productVersion")
+@ToString(exclude = "product_version")
 @Table(name = "product")
 @Entity
 public class Product {
@@ -30,10 +30,10 @@ public class Product {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column
+    @Column(name = "price")
     private int price;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

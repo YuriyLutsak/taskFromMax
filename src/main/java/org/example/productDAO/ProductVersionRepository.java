@@ -1,78 +1,46 @@
 package org.example.productDAO;
 
 import org.example.entity.ProductVersion;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 
 public class ProductVersionRepository {
 
-    private final SessionFactory sessionFactory;
+    private final EntityManager entityManager;
 
     public ProductVersionRepository() {
-        sessionFactory = ConfigSessionFactory.getSessionFactory();
+        entityManager = ConfigEntityManager.getEntityManager();
     }
 
     public void save(ProductVersion productVersion) {
-        Session session = sessionFactory.openSession();
-        Transaction trCreate = session.beginTransaction();
-
-        session.persist(productVersion);
-
-        trCreate.commit();
-        session.close();
-    }
-
-    public void update(ProductVersion productVersion){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        if (productVersion.getId() == null) {
-            throw new RuntimeException("Current object didnt saved before");
-        }
-        session.merge(productVersion);
-
-        transaction.commit();
-        session.close();
+        entityManager.getTransaction().begin();
+        entityManager.persist(productVersion);
+        entityManager.getTransaction().commit();
     }
 
     public List<ProductVersion> findAll() {
-        List<ProductVersion> versionList;
+        entityManager.getTransaction().begin();
 
-        Session session = sessionFactory.openSession();
-        Transaction trFindAll = session.beginTransaction();
+        var query = entityManager.createQuery("from ProductVersion", ProductVersion.class);
+        var result = query.getResultList();
 
-        Query<ProductVersion> query = session.createQuery("from ProductVersion", ProductVersion.class);
-        versionList = query.list();
+        entityManager.getTransaction().commit();
 
-        trFindAll.commit();
-        session.close();
-
-        return versionList;
+        return result;
     }
 
-    public void delete(ProductVersion productVersion) {
-        Session session = sessionFactory.openSession();
-        Transaction trDelete = session.beginTransaction();
+    public ProductVersion findById(UUID id){
+        entityManager.getTransaction().begin();
+        var versionId = entityManager.find(ProductVersion.class, id);
+        entityManager.getTransaction().commit();
 
-        session.remove(productVersion);
-
-        trDelete.commit();
-        session.close();
+        return versionId;
     }
 
-    public ProductVersion findById(UUID id) {
-        Session session = sessionFactory.openSession();
-        Transaction trFind = session.beginTransaction();
-
-        ProductVersion productVersion = session.find(ProductVersion.class, id);
-
-        trFind.commit();
-        session.close();
-
-        return productVersion;
+    public void delete(ProductVersion productVersion){
+        entityManager.getTransaction().begin();
+        entityManager.remove(productVersion);
+        entityManager.getTransaction().commit();
     }
 }
